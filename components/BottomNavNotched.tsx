@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path, Circle, Line } from 'react-native-svg';
 
@@ -15,6 +15,7 @@ const BottomNavNotched: React.FC<BottomNavNotchedProps> = ({
   onCreatePress,
 }) => {
   const insets = useSafeAreaInsets();
+  const { width: screenWidth } = Dimensions.get('window');
   const barHeight = 96;
   const notchRadius = 36;
   const createButtonRadius = 32;
@@ -22,11 +23,9 @@ const BottomNavNotched: React.FC<BottomNavNotchedProps> = ({
   const strokeWidth = 1.5;
 
   // Calculate the notch path
-  const screenWidth = 400; // This will be adjusted based on actual screen width
   const centerX = screenWidth / 2;
   const barTopY = 0;
   const notchCenterY = barTopY - 8; // 8dp above bar top
-  const notchTopY = notchCenterY - notchRadius;
 
   // Create the SVG path for the bar with notch
   const createBarPath = () => {
@@ -40,7 +39,7 @@ const BottomNavNotched: React.FC<BottomNavNotchedProps> = ({
     const notchStartX = centerX - notchRadius;
     path += ` L ${notchStartX} ${barTopY}`;
     
-    // Notch arc (concave circle)
+    // Notch arc (concave circle) - this creates the perfect circular notch
     path += ` A ${notchRadius} ${notchRadius} 0 0 1 ${centerX + notchRadius} ${barTopY}`;
     
     // Top edge to right corner
@@ -63,103 +62,6 @@ const BottomNavNotched: React.FC<BottomNavNotchedProps> = ({
     
     return path;
   };
-
-  // Icon components
-  const HomeIcon = ({ color, size = 28 }: { color: string; size?: number }) => (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M9 22V12H15V22"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
-  const SearchIcon = ({ color, size = 28 }: { color: string; size?: number }) => (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Circle
-        cx="11"
-        cy="11"
-        r="8"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M21 21L16.65 16.65"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
-  const FiltersIcon = ({ color, size = 28 }: { color: string; size?: number }) => (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M22 3H2L10 12.46V19L14 21V12.46L22 3Z"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
-  const ProfileIcon = ({ color, size = 28 }: { color: string; size?: number }) => (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Circle
-        cx="12"
-        cy="7"
-        r="4"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
-  const PlusIcon = ({ color, size = 28 }: { color: string; size?: number }) => (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Line
-        x1="12"
-        y1="5"
-        x2="12"
-        y2="19"
-        stroke={color}
-        strokeWidth="6"
-        strokeLinecap="round"
-      />
-      <Line
-        x1="5"
-        y1="12"
-        x2="19"
-        y2="12"
-        stroke={color}
-        strokeWidth="6"
-        strokeLinecap="round"
-      />
-    </Svg>
-  );
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
@@ -185,9 +87,22 @@ const BottomNavNotched: React.FC<BottomNavNotchedProps> = ({
             style={styles.iconButton}
             onPress={() => onTabPress('home')}
           >
-            <HomeIcon
-              color={activeTab === 'home' ? '#00DDD7' : '#FFFFFF'}
-            />
+            <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
+              <Path
+                d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"
+                stroke={activeTab === 'home' ? '#00DDD7' : '#FFFFFF'}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <Path
+                d="M9 22V12H15V22"
+                stroke={activeTab === 'home' ? '#00DDD7' : '#FFFFFF'}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </Svg>
           </TouchableOpacity>
 
           {/* Search */}
@@ -195,9 +110,24 @@ const BottomNavNotched: React.FC<BottomNavNotchedProps> = ({
             style={styles.iconButton}
             onPress={() => onTabPress('search')}
           >
-            <SearchIcon
-              color={activeTab === 'search' ? '#00DDD7' : '#FFFFFF'}
-            />
+            <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
+              <Circle
+                cx="11"
+                cy="11"
+                r="8"
+                stroke={activeTab === 'search' ? '#00DDD7' : '#FFFFFF'}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <Path
+                d="M21 21L16.65 16.65"
+                stroke={activeTab === 'search' ? '#00DDD7' : '#FFFFFF'}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </Svg>
           </TouchableOpacity>
 
           {/* Spacer for create button */}
@@ -208,9 +138,15 @@ const BottomNavNotched: React.FC<BottomNavNotchedProps> = ({
             style={styles.iconButton}
             onPress={() => onTabPress('filters')}
           >
-            <FiltersIcon
-              color={activeTab === 'filters' ? '#00DDD7' : '#FFFFFF'}
-            />
+            <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
+              <Path
+                d="M22 3H2L10 12.46V19L14 21V12.46L22 3Z"
+                stroke={activeTab === 'filters' ? '#00DDD7' : '#FFFFFF'}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </Svg>
           </TouchableOpacity>
 
           {/* Profile */}
@@ -218,9 +154,24 @@ const BottomNavNotched: React.FC<BottomNavNotchedProps> = ({
             style={styles.iconButton}
             onPress={() => onTabPress('profile')}
           >
-            <ProfileIcon
-              color={activeTab === 'profile' ? '#00DDD7' : '#FFFFFF'}
-            />
+            <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
+              <Path
+                d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                stroke={activeTab === 'profile' ? '#00DDD7' : '#FFFFFF'}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <Circle
+                cx="12"
+                cy="7"
+                r="4"
+                stroke={activeTab === 'profile' ? '#00DDD7' : '#FFFFFF'}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </Svg>
           </TouchableOpacity>
         </View>
       </View>
@@ -235,22 +186,28 @@ const BottomNavNotched: React.FC<BottomNavNotchedProps> = ({
         ]}
         onPress={onCreatePress}
       >
-        <Svg width={createButtonRadius * 2} height={createButtonRadius * 2}>
-          <Circle
-            cx={createButtonRadius}
-            cy={createButtonRadius}
-            r={createButtonRadius}
-            fill="#00DDD7"
-            stroke="#FFFFFF"
-            strokeWidth="2"
-          />
-          <PlusIcon
-            color="#FFFFFF"
-            size={28}
-            x={createButtonRadius - 14}
-            y={createButtonRadius - 14}
-          />
-        </Svg>
+        <View style={styles.createButtonInner}>
+          <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
+            <Line
+              x1="12"
+              y1="5"
+              x2="12"
+              y2="19"
+              stroke="#FFFFFF"
+              strokeWidth="6"
+              strokeLinecap="round"
+            />
+            <Line
+              x1="5"
+              y1="12"
+              x2="19"
+              y2="12"
+              stroke="#FFFFFF"
+              strokeWidth="6"
+              strokeLinecap="round"
+            />
+          </Svg>
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -292,6 +249,8 @@ const styles = StyleSheet.create({
     padding: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    minWidth: 40,
+    minHeight: 40,
   },
   createButtonSpacer: {
     width: 80, // 64 + 16 gap
@@ -310,6 +269,16 @@ const styles = StyleSheet.create({
         elevation: 8,
       },
     }),
+  },
+  createButtonInner: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#00DDD7',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
